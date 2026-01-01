@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Zarządzania Energią (SZE)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .status-bar {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 15px 5px 0;
+        }
+        
+        .status-label {
+            font-weight: bold;
+            margin-right: 8px;
+            color: #495057;
+        }
+        
+        .status-value {
+            padding: 5px 12px;
+            background: white;
+            border-radius: 20px;
+            border: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+        
+        .status-value.good {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-value.warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+        
+        .status-value.danger {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+            font-size: 1.4em;
+        }
+        
+        .data-item {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: #495057;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .data-value {
+            color: #212529;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .notification.warning {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .notification.success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .notification.info {
+            background: #d1ecf1;
+            border: 2px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .links {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .link {
+            display: inline-block;
+            margin-right: 15px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .link:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #dee2e6;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .sections {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ System Zarządzania Energią (SZE)</h1>
+            <div class="subtitle">Monitorowanie i sterowanie systemem PV + magazyn energii</div>
+        </header>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">Status:</span>
+                <span class="status-value good">● AKTYWNY</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Data:</span>
+                <span class="status-value">{{ system.data_str if system.data_str else 'Brak danych' }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Godzina:</span>
+                <span class="status-value">{{ system.godzina if system.godzina else 'Brak danych' }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Ostatnia aktualizacja:</span>
+                <span class="status-value">{{ system.last_update if system.last_update else 'Brak danych' }}</span>
+            </div>
+        </div>
+        
+        <div class="notification warning">
+            ⚠ SYSTEM W TRYBIE TESTOWYM - Wszystkie sterowania są zablokowane
+        </div>
+        
+        <div class="sections">
+            <!-- Sekcja 1: Status systemu -->
+            <div class="section">
+                <h2 class="section-title">📊 Status Systemu</h2>
+                
+                <div class="data-item">
+                    <span class="data-label">Rodzaj dnia:</span>
+                    <span class="data-value">{{ system.rodzaj_dnia if system.rodzaj_dnia else 'Brak danych' }}</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Okno dobowe:</span>
+                    <span class="data-value">{{ system.okno_dobowe if system.okno_dobowe else 'Brak danych' }}</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Taryfa:</span>
+                    <span class="data-value 
+                        {% if system.taryfa == 'tańsza' %}good{% elif system.taryfa %}warning{% endif %}">
+                        {{ system.taryfa if system.taryfa else 'Brak danych' }}
+                    </span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">CWU z kotła:</span>
+                    <span class="data-value 
+                        {% if system.cwz_z_kotla == 'WŁ' %}success{% elif system.cwz_z_kotla == 'WYŁ' %}danger{% endif %}">
+                        {{ system.cwz_z_kotla if system.cwz_z_kotla else 'Brak danych' }}
+                    </span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Grzałki zablokowane:</span>
+                    <span class="data-value 
+                        {% if system.grzalki_zablokowane == 'TAK' %}success{% elif system.grzalki_zablokowane == 'NIE' %}danger{% endif %}">
+                        {{ system.grzalki_zablokowane if system.grzalki_zablokowane else 'Brak danych' }}
+                    </span>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        🔄 Odśwież dane
+                    </button>
+                    
+                    <form action="/api/toggle-cwu-boiler" method="post" style="display: inline;">
+                        {% if system.cwz_z_kotla == 'WŁ' %}
+                            <button type="submit" name="enabled" value="false" 
+                                    class="btn btn-danger" onclick="return confirm('Na pewno wyłączyć CWU z kotła?')">
+                                🔥 Wyłącz CWU z kotła
+                            </button>
+                        {% else %}
+                            <button type="submit" name="enabled" value="true" 
+                                    class="btn btn-success">
+                                🔥 Włącz CWU z kotła
+                            </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Sekcja 2: Dane z plików JSON -->
+            <div class="section">
+                <h2 class="section-title">📋 Dane z plików JSON</h2>
+                
+                {% if json_data %}
+                    <div class="notification success">
+                        ✅ Dane JSON załadowane poprawnie
+                    </div>
+                    
+                    <div class="data-item">
+                        <span class="data-label">Zaimportowane pliki:</span>
+                        <span class="data-value">{{ json_data.keys()|list|join(', ') }}</span>
+                    </div>
+                    
+                    {% for key, data in json_data.items() %}
+                        {% if data is mapping %}
+                            <div class="data-item">
+                                <span class="data-label">{{ key }}:</span>
+                                <span class="data-value good">
+                                    {{ data.keys()|list|join(', ') if data.keys()|length < 5 else data.keys()|list|length ~ ' kluczy' }}
+                                </span>
+                            </div>
+                        {% else %}
+                            <div class="data-item">
+                                <span class="data-label">{{ key }}:</span>
+                                <span class="data-value">
+                                    {{ data|string|truncate(30) if data|length > 30 else data|string }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                {% else %}
+                    <div class="notification warning">
+                        ⚠ Nie znaleziono plików JSON.<br>
+                        Sprawdź folder: <strong>/home/greg/sze_system/config/</strong>
+                    </div>
+                    
+                    <div class="data-item">
+                        <span class="data-label">Uwaga:</span>
+                        <span class="data-value">Umieść pliki *.json w katalogu config/</span>
+                    </div>
+                    
+                    <div class="data-item">
+                        <span class="data-label">Oczekiwane pliki:</span>
+                        <span class="data-value">profile_*.json, hardware.json, etc.</span>
+                    </div>
+                    
+                    <div class="data-item">
+                        <span class="data-label">Przykładowe dane:</span>
+                        <span class="data-value">Brak danych JSON</span>
+                    </div>
+                {% endif %}
+                
+                <div class="links">
+                    <a href="/api/json-data" class="link" target="_blank">📄 Zobacz dane JSON</a>
+                    <a href="/api/status" class="link" target="_blank">📡 API Status</a>
+                </div>
+            </div>
+            
+            <!-- Sekcja 3: Solar Assistant MQTT -->
+            <div class="section">
+                <h2 class="section-title">🔌 Solar Assistant MQTT</h2>
+                
+                <!-- Tymczasowo zakomentowane - potrzebuję struktury mqtt_data -->
+<!-- Sekcja 3: Solar Assistant MQTT -->
+<div class="section">
+    <h2 class="section-title">🔌 Solar Assistant MQTT</h2>
+    
+    <div class="data-item">
+        <span class="data-label">Status połączenia:</span>
+        <span class="data-value {% if mqtt_data.mqtt_connected %}good{% else %}danger{% endif %}">
+            {{ 'POŁĄCZONY' if mqtt_data.mqtt_connected else 'ROZŁĄCZONY' }}
+        </span>
+    </div>
+    
+    <div class="data-item">
+        <span class="data-label">Ostatnia aktualizacja:</span>
+        <span class="data-value">{{ mqtt_data.last_update }}</span>
+    </div>
+    
+    {% if mqtt_data.mqtt_connected and mqtt_data.data %}
+        <div class="data-item">
+            <span class="data-label">SOC baterii:</span>
+            <span class="data-value {% if mqtt_data.data.get('battery_soc', 0) > 20 %}good{% else %}warning{% endif %}">
+                {{ "%.1f"|format(mqtt_data.data.get('battery_soc', 0)) }}%
+            </span>
+        </div>
+        
+        <div class="data-item">
+            <span class="data-label">Moc z sieci:</span>
+            <span class="data-value {% if mqtt_data.data.get('grid_power', 0) == 0 %}good{% else %}warning{% endif %}">
+                {{ mqtt_data.data.get('grid_power', 0) }} W
+            </span>
+        </div>
+        
+        <div class="data-item">
+            <span class="data-label">Moc PV:</span>
+            <span class="data-value">{{ mqtt_data.data.get('pv_power', 0) }} W</span>
+        </div>
+        
+        <div class="data-item">
+            <span class="data-label">Moc obciążenia:</span>
+            <span class="data-value">{{ mqtt_data.data.get('load_power', 0) }} W</span>
+        </div>
+        
+        {% if mqtt_data.data.get('output_source') %}
+        <div class="data-item">
+            <span class="data-label">Tryb zasilania:</span>
+            <span class="data-value">{{ mqtt_data.data.get('output_source', 'Brak danych') }}</span>
+        </div>
+        {% endif %}
+        
+        {% if mqtt_data.data.get('charger_source') %}
+        <div class="data-item">
+            <span class="data-label">Tryb ładowania:</span>
+            <span class="data-value">{{ mqtt_data.data.get('charger_source', 'Brak danych') }}</span>
+        </div>
+        {% endif %}
+        
+        <div class="notification info">
+            ℹ️ Tryb tylko do odczytu. Sterowanie dostępne przez API.
+        </div>
+        
+    {% else %}
+        <div class="notification warning">
+            ⚠️ Brak połączenia z Solar Assistant<br>
+            Sprawdź: {{ config.MQTT_BROKER if hasattr(config, 'MQTT_BROKER') else '192.168.8.143' }}:{{ config.MQTT_PORT if hasattr(config, 'MQTT_PORT') else '1883' }}
+        </div>
+    {% endif %}
+    
+    <div class="links">
+        <a href="/api/mqtt-data" class="link" target="_blank">📡 API MQTT</a>
+        <a href="/api/mqtt/status" class="link" target="_blank">🔧 Status MQTT</a>
+    </div>
+</div>
+            
+            <!-- Sekcja 4: Informacje systemowe -->
+            <div class="section">
+                <h2 class="section-title">⚙️ Informacje Systemowe</h2>
+                
+                <div class="data-item">
+                    <span class="data-label">Wersja systemu:</span>
+                    <span class="data-value">2.0.0 (JSON Edition)</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Tryb pracy:</span>
+                    <span class="data-value">DANE Z JSON</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Plik logów:</span>
+                    <span class="data-value">{{ config.LOG_FILE }}</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">JSON załadowane:</span>
+                    <span class="data-value {% if json_data %}good{% else %}warning{% endif %}">
+                        {{ 'TAK (' ~ json_data.keys()|list|length ~ ' plików)' if json_data else 'NIE' }}
+                    </span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Folder danych:</span>
+                    <span class="data-value">/home/greg/sze_system/config/</span>
+                </div>
+                
+                <div class="notification success">
+                    ✅ System gotowy.<br>
+                    Format danych: JSON
+                </div>
+                
+                <div class="links">
+                    <a href="/logs" class="link">📝 Zobacz logi systemu</a>
+                    <a href="/api/test" class="link" target="_blank">🧪 Test API</a>
+                    <a href="/health" class="link" target="_blank">❤️ Health Check</a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>System Zarządzania Energią (SZE) © 2024 | Wersja 2.0.0 (JSON)</p>
+            <p>Uruchomiono: {{ system.timestamp[:19].replace('T', ' ') if system.timestamp else 'Brak danych' }}</p>
+        </footer>
+    </div>
+    
+    <script>
+        function refreshData() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    alert('Dane odświeżone!\nCzas: ' + (data.godzina || data.timestamp || 'Brak danych'));
+                    location.reload();
+                })
+                .catch(error => {
+                    alert('Błąd odświeżania: ' + error);
+                });
+        }
+        
+        // Automatyczne odświeżanie co 60 sekund
+        setTimeout(() => {
+            console.log('Automatyczne odświeżanie...');
+            fetch('/api/status').then(() => location.reload());
+        }, 60000);
+        
+        // Status online/offline
+        window.addEventListener('online', () => {
+            console.log('System online');
+        });
+        
+        window.addEventListener('offline', () => {
+            alert('⚠ Utrata połączenia z serwerem!');
+        });
+    </script>
+</body>
+</html>
