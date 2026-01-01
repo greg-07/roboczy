@@ -1,0 +1,95 @@
+{
+  "_comment": "PLIK: system_config.json - Hardware, API, PV, Bojler, Kalendarz, Taryfa, MQTT. Edytowalny przez HTTP.",
+  "data_timestamp": "2025-01-15",
+  "supla_hardware": {
+    "heaters": {
+      "heater_500w_id": 19147,
+      "heater_1000w_id": 19149,
+      "heater_2000w_id": 19177
+    },
+    "sensors": {
+      "boiler_temp_main_id": 7502,
+      "boiler_temp_main_name": "term. bojlera prawy",
+      "boiler_temp_backup_id": 19187,
+      "boiler_temp_backup_name": "term. bojlera lewy"
+    },
+    "personal_token": "M2E0MGViZGU0OWYyNjdjN2ZhYTg2NjQ1NjEwNGQ5NWM1NWJjYWRmMDkzMmU0NjA3NmMwN2I2ZmJkOGY1YmNiZA.aHR0cHM6Ly9zdnIxMDAuc3VwbGEub3Jn"
+  },
+  "api_keys": {
+    "openweathermap": "84a566edf169f0299da142035c4a5335",
+    "pushover": {
+      "user_key": "uaw6wh4fdstyquq1z1dy5d4pgvrh6z",
+      "api_token": "am3tt5c5iu883oauyx3y5hfkvwp4rj"
+    }
+  },
+  "pv_installation": {
+    "type": "gruntowa",
+    "coordinates": "51.290050, 22.818633",
+    "installed_power_wp": 2430,
+    "azimuth_degrees": 180,
+    "tilt_degrees": 45
+  },
+  "boiler": {
+    "constants": {
+      "time_to_heat_1l_1c_at_100w_seconds": 41.86,
+      "energy_to_heat_1l_1c_wh": 1.16
+    },
+    "capacity_liters": 120,
+    "heater_powers_watts": {
+      "heater_1": 500,
+      "heater_2": 1000,
+      "heater_3": 2000
+    },
+    "default_total_power": {
+      "morning_watts": 2000,
+      "evening_watts": 1500,
+      "_comment": "Użytkownik może zmienić te wartości przez HTTP."
+    },
+    "loss_coefficients_percent": {
+      "time_extension": 10,
+      "energy_increase": 10
+    }
+  },
+  "mqtt_solar_assistant": {
+    "broker": "192.168.8.143",
+    "port": 1883,
+    "topic_prefix": "SZE"
+  },
+  "calendar": {
+    "fixed_holidays": [
+      "01-01",
+      "01-06",
+      "05-01",
+      "05-03",
+      "08-15",
+      "11-01",
+      "11-11",
+      "12-24",
+      "12-25",
+      "12-26"
+    ],
+    "movable_holidays": [],
+    "_comment": "Święta ruchome użytkownik dodaje przez HTTP w formacie RRRR-MM-DD."
+  },
+  "tariff_g12w": {
+    "winter_period": {
+      "start": "10-01",
+      "end": "03-31",
+      "cheaper_daytime_hours": "13:00-15:00"
+    },
+    "summer_period": {
+      "start": "04-01",
+      "end": "09-30",
+      "cheaper_daytime_hours": "15:00-17:00"
+    },
+    "cheaper_night_hours": "22:00-06:00",
+    "_comment": "W święta (fixed_holidays i movable_holidays) obowiązuje tańsza taryfa całodobowo."
+   },
+  "system_settings": {
+    "log_file": "sze_system.log",
+    "check_interval_seconds": 120,
+    "log_retention_days": 30,
+    "_comment": "Ustawienia runtime systemu"
+  }
+
+}
