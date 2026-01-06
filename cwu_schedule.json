@@ -1,0 +1,18 @@
+{
+  "_comment": "PLIK: Harmonogram CWU - pola w HTTP. Edytowalny przez użytkownika.",
+  "data_timestamp": "2025-01-15",
+  "temperatury": {
+    "temp_ranek_celsius": 40,
+    "temp_wieczor_celsius": 50
+  },
+  "harmonogram_poranny": {
+    "dzien_roboczy_godzina": "04:30",
+    "sobota_godzina": "07:00",
+    "niedziela_swieto_godzina": "08:00"
+  },
+  "harmonogram_wieczorny": {
+    "dzien_roboczy_godzina": "19:30",
+    "sobota_godzina": "19:00",
+    "niedziela_swieto_godzina": "19:00"
+  }
+}
